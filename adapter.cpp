@@ -1,6 +1,5 @@
- 
 #include <iostream>
- 
+
 class FahrenheitSensor
 {
   public:
@@ -35,7 +34,7 @@ class Adapter : public Sensor
 int main()
 {
   Sensor* p = new Adapter( new FahrenheitSensor);
-  cout << "Celsius temperature = " << p->getTemperature() << endl;
+  std::cout << "Celsius temperature = " << p->getTemperature() << std::endl;
   delete p;    
   return 0;
 }
