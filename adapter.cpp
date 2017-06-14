@@ -1,67 +1,41 @@
-#include <iostream.h>
-
-typedef int Coordinate;
-typedef int Dimension;
-
-// Desired interface
-class Rectangle
+ 
+#include <iostream>
+ 
+class FahrenheitSensor
 {
-public:
-	virtual void draw() = 0;
+  public:
+    float getFahrenheitTemp() {
+      float t = 32.0;
+      return t;
+    }
 };
-
-// Legacy component
-class LegacyRectangle
-{
-public:
-	LegacyRectangle(Coordinate x1, Coordinate y1,
-		Coordinate x2, Coordinate y2)
-	{
-		x1_ = x1;
-		y1_ = y1;
-		x2_ = x2;
-		y2_ = y2;
-		std::cout << "LegacyRectangle:  create.  (" << x1_
-			<< "," << y1_ << ") => (" << x2_ << ","
-			<< y2_ << ")" << std::endl;
-	}
-	void oldDraw()
-	{
-		std::cout << "LegacyRectangle:  oldDraw.  (" << x1_
-			<< "," << y1_ << ") => (" << x2_ << ","
-			<< y2_ << ")" << std::endl;
-	}
-private:
-	Coordinate x1_;
-	Coordinate y1_;
-	Coordinate x2_;
-	Coordinate y2_;
+  
+class Sensor
+{    
+  public:
+    virtual ~Sensor() {}
+    virtual float getTemperature() = 0;
 };
-
-// Adapter wrapper
-class RectangleAdapter : public Rectangle, private LegacyRectangle
-{
-public:
-	RectangleAdapter(Coordinate x, Coordinate y,
-		Dimension w, Dimension h) :
-		LegacyRectangle(x, y, x + w, y + h)
-	{
-		std::cout << "RectangleAdapter: create.  (" << x << "," << y <<
-			"), width = " << w << ", height = " << h << std::endl;
-	}
-	virtual void draw()
-	{
-		std::cout << "RectangleAdapter: draw." << std::endl;
-		oldDraw();
-	}
+  
+class Adapter : public Sensor
+{    
+  public:
+    Adapter( FahrenheitSensor* p ) : p_fsensor(p) {
+    }
+   ~Adapter() {
+      delete p_fsensor;
+    }
+    float getTemperature() {
+      return (p_fsensor->getFahrenheitTemp()-32.0)*5.0/9.0;
+    }
+  private:
+    FahrenheitSensor* p_fsensor; 
 };
-
+  
 int main()
 {
-	Rectangle *r = new RectangleAdapter(120, 200, 60, 40);
-	r->draw();
+  Sensor* p = new Adapter( new FahrenheitSensor);
+  cout << "Celsius temperature = " << p->getTemperature() << endl;
+  delete p;    
+  return 0;
 }
-LegacyRectangle:  create.  (120, 200) = > (180, 240)
-RectangleAdapter: create.  (120, 200), width = 60, height = 40
-			  RectangleAdapter : draw.
-							 LegacyRectangle : oldDraw.  (120, 200) = > (180, 240)
