@@ -14,13 +14,13 @@ class Singleton
         return p_instance;
     }
 };
-
-   **************************************
-
+  
 // Singleton.cpp
 #include "Singleton.h"
   
 Singleton* Singleton::p_instance = 0;
+  
+   **************************************
 
 // Singleton.h
 class Singleton
